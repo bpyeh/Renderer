@@ -12,6 +12,9 @@
 const int WINDOW_W = 800;
 const int WINDOW_H = 600;
 const double ASPECT_RATIO = (double)WINDOW_H / WINDOW_W;
+int fov_factor = 3.14159 / 3; 
+double z_near = 0.1;
+double z_far = 100.0;
 
 bool is_running = false;
 const int FPS = 30;
@@ -35,6 +38,7 @@ mymath::Vec2<int> project_iso(mymath::Vec3<double> in) {
 }
 
 // perspective projection
+mymath::Mat44<double> P;
 mymath::Vec3<double> camera_pos(0, 0, 0);
 mymath::Vec2<int> project_perspective(mymath::Vec3<double> in);
 
@@ -51,23 +55,17 @@ int main(int argc, char* args[]) {
 		return false;
 	}
 
-	mymath::Mat44<int> sM = mymath::make_scale(2, 3, 4);
-	for (int r = 0; r < 4; r++) {
-		for (int c = 0; c < 4; c++) {
-			std::cout << "[" << sM[r][c] << "]";
-		}
-		std::cout << std::endl;
-	}
-
 	{
 		Window window(WINDOW_W, WINDOW_H, camera_pos);
 		//mesh = Mesh(CUBE_MESH_VERTICES, CUBE_MESH_FACES);
 		//std::string filename = "surprised_pikachu.obj";
-		//std::string filename = "f22.obj";
-		std::string filename = "cube.obj";
+		std::string filename = "f22.obj";
+		//std::string filename = "cube.obj";
 		mesh.load(filename);
 		triangles.resize(mesh.faces.size(), { { 0, 0 }, { 0, 0 }, { 0, 0 } });
 		is_running = window.init();
+		
+		P = mymath::make_perspective(ASPECT_RATIO, fov_factor, z_near, z_far);
 
 		while (is_running) {
 			process_input();
@@ -103,7 +101,6 @@ mymath::Vec3<double> rotate_x(mymath::Vec3<double> in, double angle) {
 		in.y * sin(angle) + in.z * cos(angle)
 	};
 }
-
 mymath::Vec3<double> rotate_y(mymath::Vec3<double> in, double angle)
 {
 	return {
@@ -148,13 +145,6 @@ void update() {
 	mesh.rotation.y += 0.01;
 	//mesh.rotation.z += 0.01;
 
-	//triangles[0] = {
-	//	{100, 100},
-	//	{200, 50},
-	//	{300, 300}
-	//};
-	//num_valid_triangles = 1;
-
 	mymath::Vec3<double> transformed_pt0;
 	mymath::Vec3<double> transformed_pt1;
 	mymath::Vec3<double> transformed_pt2;
@@ -185,10 +175,16 @@ mymath::Vec2<int> project_perspective(mymath::Mat44<double>& P, mymath::Vec4<dou
 		projected.y /= projected.w;
 		projected.z /= projected.w;
 	}
+
+	return {
+		(int)(projected.x * (WINDOW_W)),
+		(int)(projected.y * (WINDOW_H))
+	};
 }
 
 mymath::Vec2<int> project_perspective(mymath::Vec3<double> in) {
 	int fov_factor = 640; // 1 / tan(theta/2)
+
 	return {
 		(int)((in.x * fov_factor) / in.z) + (WINDOW_W / 2),
 		(int)((in.y * fov_factor) / in.z) + (WINDOW_H / 2)

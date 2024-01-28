@@ -76,14 +76,6 @@ namespace mymath {
 	static Mat44<T> make_rotateZ(double rad) {
 		Mat44<T> out = eye<T>();
 		out[0][0] = cos(rad); out[0][1] = -sin(rad);
-		out[1][0] = sin(rad); out[1][1] = sin(rad);
-		return out;
-	}
-
-	template<typename T>
-	static Mat44<T> make_rotateY(double rad) {
-		Mat44<T> out = eye<T>();
-		out[0][0] = cos(rad); out[0][1] = -sin(rad);
 		out[1][0] = sin(rad); out[1][1] = cos(rad);
 		return out;
 	}
