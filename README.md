@@ -5,9 +5,10 @@ A side project to learn about graphics programming, a field that's of interest t
 ![img](https://github.com/bpyeh/Renderer/blob/main/current_progress.PNG)
 
 Concepts demonstrated:
-Perspective projection
-Line drawing (DDA and Bresenham)
-Backface culling
-Triangle rasterization
-OBJ file parsing
+1. Perspective projection
+2. Line drawing (DDA and Bresenham)
+3. Backface culling
+4. Triangle rasterization
+5. OBJ file parsing
  
+More features incoming!
