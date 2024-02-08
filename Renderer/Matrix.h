@@ -102,6 +102,8 @@ namespace mymath {
 		out[1][1] = 1 / tan(fov / 2);
 		out[2][2] = zfar / (zfar - znear);
 		out[2][3] = -zfar * znear / (zfar - znear);
+		out[3][2] = 1;
+		out[3][3] = 0;
 		return out;
 	}
 }

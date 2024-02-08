@@ -81,37 +81,28 @@ void Window::render(std::vector<projected_triangle_t>& pts, int N)
 	SDL_RenderPresent(renderer);
 }
 
-void Window::draw_grid()
-{
-	// draw horizontal
-	for (int r = 0; r < H; r += 10) {
-		for (int c = 0; c < W; c++) {
-			color_buffer[r * W + c] = 0xFFFFFFFF;
-		}
-	}
-	// draw vertical
-	for (int c = 0; c < W; c += 10) {
-		for (int r = 0; r < H; r++) {
-			color_buffer[r * W + c] = 0xFFFFFFFF;
-		}
-	}
-}
-
 void Window::draw_triangles(std::vector<projected_triangle_t>& pts, int N)
 {
+	// painter's algorithm
+	// sort by z first before drawing
+	sort(pts.begin(), pts.end(),
+		[](const projected_triangle_t& t1, const projected_triangle_t& t2) {
+			return t1.average_depth > t2.average_depth;
+		});
+
 	for (int i = 0; i < N; i++) {
 		//draw_rect(pts[i][0].x, pts[i][0].y, 3, 3, 0xFFFFFF00);
 		//draw_rect(pts[i][1].x, pts[i][1].y, 3, 3, 0xFFFFFF00);
 		//draw_rect(pts[i][2].x, pts[i][2].y, 3, 3, 0xFFFFFF00);
-		draw_line(pts[i][0].x, pts[i][0].y, pts[i][1].x, pts[i][1].y, 0xFF0000FF);
-		draw_line(pts[i][1].x, pts[i][1].y, pts[i][2].x, pts[i][2].y, 0xFF0000FF);
-		draw_line(pts[i][2].x, pts[i][2].y, pts[i][0].x, pts[i][0].y, 0xFF0000FF);	
+		draw_line(pts[i].vertices[0].x, pts[i].vertices[0].y, pts[i].vertices[1].x, pts[i].vertices[1].y, pts[i].color);
+		draw_line(pts[i].vertices[1].x, pts[i].vertices[1].y, pts[i].vertices[2].x, pts[i].vertices[2].y, pts[i].color);
+		draw_line(pts[i].vertices[2].x, pts[i].vertices[2].y, pts[i].vertices[0].x, pts[i].vertices[0].y, pts[i].color);
 		
 		draw_filled_triangle(
-			pts[i][0].x, pts[i][0].y,
-			pts[i][1].x, pts[i][1].y,
-			pts[i][2].x, pts[i][2].y,
-			0xFFFFFFFF);
+			pts[i].vertices[0].x, pts[i].vertices[0].y,
+			pts[i].vertices[1].x, pts[i].vertices[1].y,
+			pts[i].vertices[2].x, pts[i].vertices[2].y,
+			pts[i].color);
 	}
 }
 
@@ -201,7 +192,7 @@ void Window::draw_line(int x1, int y1, int x2, int y2, uint32_t color)
 	double yStep = ((double)dy) / side;
 	double curX = x1;
 	double curY = y1;
-	for (int i = 0; i < side; i++) {
+	for (int i = 0; i <= side; i++) {
 		draw_pixel(std::round(curX), std::round(curY), color);
 		curX += xStep;
 		curY += yStep;

@@ -13,4 +13,8 @@ using face_t = std::vector<int>;
 using triangle_t = std::vector<int>;
 
 // a projected triangle is a triangle whose points have been translated into window (2D) coordinates
-using projected_triangle_t = std::vector<mymath::Vec2<int>>;
+using projected_triangle_t = struct {
+	std::vector<mymath::Vec2<int>> vertices;
+	uint32_t color;
+	double average_depth;
+};

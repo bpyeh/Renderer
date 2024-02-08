@@ -38,7 +38,6 @@ public:
 	void render(std::vector<projected_triangle_t>& vec, int N);
 
 	// custom draw functions
-	void draw_grid();
 	void draw_triangles(std::vector<projected_triangle_t>& vec, int N);
 	void draw_filled_triangle(int x0, int y0, int x1, int y1, int x2, int y2, uint32_t color);
 	void draw_pixel(int x, int y, uint32_t color);
