@@ -8,6 +8,7 @@
 #include "dtypes.h"
 #include "Mesh.h"
 #include "Matrix.h"
+#include "Texture.h"
 
 const int WINDOW_W = 800;
 const int WINDOW_H = 600;
@@ -25,6 +26,7 @@ uint32_t cur_frame_time = 0;
 void process_input();
 
 Mesh mesh;
+Texture texture;
 std::vector<projected_triangle_t> triangles;
 int num_valid_triangles = 0;
 
@@ -61,11 +63,18 @@ int main(int argc, char* args[]) {
 
 	{
 		Window window(WINDOW_W, WINDOW_H, camera_pos);
+
+		// load mesh
 		//std::string filename = "surprised_pikachu.obj";
 		std::string filename = "f22.obj";
 		//std::string filename = "cube.obj";
 		mesh.load(filename);
-		triangles.resize(mesh.faces.size(), { {{ 0, 0 }, { 0, 0 }, { 0, 0 }}, 0 });
+		triangles.resize(mesh.faces.size());
+
+		// load texture
+		filename = "metal_texture.png";
+		texture.loadFromFile(filename);
+
 		is_running = window.init();
 		
 		projection_matrix = mymath::make_perspective(ASPECT_RATIO, fov_factor, z_near, z_far);
@@ -154,9 +163,9 @@ void update() {
 	mymath::Vec3<double> transformed_pt2;
 	num_valid_triangles = 0;
 	for (int i = 0; i < mesh.faces.size(); i++) {
-		transformed_pt0 = transform(mesh.vertices[mesh.faces[i][0] - 1], mesh.rotation);
-		transformed_pt1 = transform(mesh.vertices[mesh.faces[i][1] - 1], mesh.rotation);
-		transformed_pt2 = transform(mesh.vertices[mesh.faces[i][2] - 1], mesh.rotation);
+		transformed_pt0 = transform(mesh.vertices[mesh.faces[i].vertexInds[0] - 1], mesh.rotation);
+		transformed_pt1 = transform(mesh.vertices[mesh.faces[i].vertexInds[1] - 1], mesh.rotation);
+		transformed_pt2 = transform(mesh.vertices[mesh.faces[i].vertexInds[2] - 1], mesh.rotation);
 
 		// back face culling
 		mymath::Vec3<double> v1 = transformed_pt1 - transformed_pt0;
@@ -169,6 +178,11 @@ void update() {
 			triangles[num_valid_triangles].vertices[1] = project_perspective(transformed_pt1, z2);
 			triangles[num_valid_triangles].vertices[2] = project_perspective(transformed_pt2, z3);
 			triangles[num_valid_triangles].average_depth = (z1 + z2 + z3) / 3;
+			
+			// this is not perspective correct?
+			triangles[num_valid_triangles].uvs[0] = mesh.faces[i].uvs[0];
+			triangles[num_valid_triangles].uvs[1] = mesh.faces[i].uvs[1];
+			triangles[num_valid_triangles].uvs[2] = mesh.faces[i].uvs[2];
 
 			double percentage = negative_light_dir.dot(face_normal); // use magnitude of dot product as intensity of light
 			uint32_t color = 0xFFFFFFFF;
