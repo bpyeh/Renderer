@@ -132,6 +132,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ColorBuffer.cpp" />
+    <ClCompile Include="drawing.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="math.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -140,7 +142,9 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ColorBuffer.h" />
     <ClInclude Include="data.h" />
+    <ClInclude Include="drawing.h" />
     <ClInclude Include="dtypes.h" />
     <ClInclude Include="math.h" />
     <ClInclude Include="Matrix.h" />
