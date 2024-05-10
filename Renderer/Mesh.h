@@ -8,17 +8,24 @@
 class Mesh
 {
 private:
-public:
-
 	// Array of 3d coords
-	std::vector<vertex_t> vertices;
+	std::vector<mymath::Vec3<double>> vertices;
+
 	// Array of 3-tuples where each elem of each tuple {i, j, k} is an index into vertices
-	std::vector<triangle_t> faces;
+	std::vector<mymath::Vec3<uint32_t>> faces;
+	
+public:
+	Mesh() = delete;
+	Mesh(std::vector<mymath::Vec3<double>>& _vertices, std::vector<mymath::Vec3<uint32_t>>& _faces) :
+		vertices(std::move(_vertices)), faces(std::move(_faces)) {};
+};
 
-	mymath::Vec3<double> rotation;
-	Mesh();
-	Mesh(std::vector<vertex_t>& v, std::vector<triangle_t>& f);
+class MeshLoader
+{
+public:
+	MeshLoader() = delete;
 
-	void load(std::string& filename);
+	// Loads a mesh from obj file
+	static std::unique_ptr<Mesh> load(std::string& filename);
 };
 
